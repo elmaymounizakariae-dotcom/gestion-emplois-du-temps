@@ -297,16 +297,17 @@ def get_id(table, column, value):
     conn.close()
     return result['id'] if result else None
 
+
 def insert_timetable_fst():
     """
     Insère l'emploi du temps selon le format FST Tanger
     
     Créneaux:
-    - 09h = 09h00-10h30
-    - 10h = 10h45-12h15  (représenté par start_hour=10)
-    - 12h = 12h30-14h00
-    - 14h = 14h15-15h45
-    - 16h = 16h00-17h30
+    - 09h = 09h00-10h30 (start_hour=9)
+    - 10h = 10h45-12h15 (start_hour=10) <-- CORRECTION (était 11)
+    - 12h = 12h30-14h00 (start_hour=12)
+    - 14h = 14h15-15h45 (start_hour=14)
+    - 16h = 16h00-17h30 (start_hour=16)
     
     Jours: 1=Lundi, 2=Mardi, 3=Mercredi, 4=Jeudi, 5=Vendredi, 6=Samedi
     """
@@ -316,8 +317,13 @@ def insert_timetable_fst():
     # Vider la table timetable
     cursor.execute("DELETE FROM timetable")
     conn.commit()
+    conn.close() # On ferme car insert_schedule_slot ouvre sa propre connexion
     
-    # Récupérer les IDs
+    from database import insert_schedule_slot, check_conflict
+
+    # Récupérer les IDs (Helper local pour éviter d'ouvrir/fermer trop de connexions, on cache ?)
+    # Mieux vaut réutiliser get_id qui ouvre/ferme, c'est pas grave pour un script de populate.
+    
     # Enseignants
     prof_benali = get_id("instructors", "name", "Ahmed Benali")
     prof_elrhazi = get_id("instructors", "name", "Fatima El Rhazi")
@@ -326,7 +332,7 @@ def insert_timetable_fst():
     prof_ouafae = get_id("instructors", "name", "Ouafae Baida")
     prof_ezzey = get_id("instructors", "name", "Mustapha Ezzeyanni")
     prof_bourzik = get_id("instructors", "name", "Hassan Bourzik")
-    prof_bensouda = get_id("instructors", "name", "Karim Bensouda")
+    # prof_bensouda = get_id("instructors", "name", "Karim Bensouda") # Unused
     
     # Groupes
     grp_ad = get_id("groups", "name", "LST AD")
@@ -359,13 +365,19 @@ def insert_timetable_fst():
     amphi1 = get_id("rooms", "name", "Amphi 1")
     amphi2 = get_id("rooms", "name", "Amphi 2")
     amphi3 = get_id("rooms", "name", "Amphi 3")
+    amphi4 = get_id("rooms", "name", "Amphi 4") # Ajout
     amphi5 = get_id("rooms", "name", "Amphi 5")
+    amphi6 = get_id("rooms", "name", "Amphi 6") # Ajout
     e10 = get_id("rooms", "name", "E10")
     e11 = get_id("rooms", "name", "E11")
     e12 = get_id("rooms", "name", "E12")
+    e13 = get_id("rooms", "name", "E13") # Ajout
+    e14 = get_id("rooms", "name", "E14") # Ajout
     b01 = get_id("rooms", "name", "B01")
     b02 = get_id("rooms", "name", "B02")
+    b03 = get_id("rooms", "name", "B03") # Ajout
     c01 = get_id("rooms", "name", "C01")
+    c02 = get_id("rooms", "name", "C02") # Ajout
     f01 = get_id("rooms", "name", "F01")
     f02 = get_id("rooms", "name", "F02")
     
@@ -374,13 +386,14 @@ def insert_timetable_fst():
     # ========================================
     # EMPLOI DU TEMPS LST AD (Semestre 6)
     # ========================================
+    # Correction des heures: 11 -> 10
     timetable_data = [
         # === LUNDI ===
         # 09h00-10h30: Machine Learning CM (Amphi)
         (sub_ml, prof_sanae, grp_ad, amphi1, 1, 9, 2),
-        # 10h45-12h15: Structure des Données TD
-        (sub_struct, prof_ezzey, grp_ad_g1, b01, 1, 11, 2),
-        (sub_struct, prof_ezzey, grp_ad_g2, b02, 1, 11, 2),
+        # 10h45-12h15: Structure des Données TD (11 -> 10)
+        (sub_struct, prof_ezzey, grp_ad_g1, b01, 1, 10, 2),
+        (sub_struct, prof_ezzey, grp_ad_g2, b02, 1, 10, 2),
         # 14h15-15h45: Bases de Données TP
         (sub_bd, prof_ouafae, grp_ad_g1, e10, 1, 14, 2),
         (sub_bd, prof_ouafae, grp_ad_g2, e11, 1, 14, 2),
@@ -389,8 +402,8 @@ def insert_timetable_fst():
         # 09h00-10h30: Python TP
         (sub_py, prof_lahlou, grp_ad_g1, e10, 2, 9, 2),
         (sub_py, prof_lahlou, grp_ad_g2, e11, 2, 9, 2),
-        # 10h45-12h15: Big Data CM
-        (sub_bigdata, prof_sanae, grp_ad, amphi2, 2, 11, 2),
+        # 10h45-12h15: Big Data CM (11 -> 10)
+        (sub_bigdata, prof_sanae, grp_ad, amphi2, 2, 10, 2),
         # 14h15-15h45: Développement Web TP
         (sub_web, prof_ezzey, grp_ad_g1, e12, 2, 14, 2),
         
@@ -398,23 +411,23 @@ def insert_timetable_fst():
         # 09h00-10h30: Machine Learning TP
         (sub_ml, prof_sanae, grp_ad_g1, e10, 3, 9, 2),
         (sub_ml, prof_sanae, grp_ad_g2, e11, 3, 9, 2),
-        # 10h45-12h15: Anglais
-        (sub_anglais, prof_benali, grp_ad, c01, 3, 11, 2),
+        # 10h45-12h15: Anglais (11 -> 10)
+        (sub_anglais, prof_benali, grp_ad, c01, 3, 10, 2),
         
         # === JEUDI ===
         # 09h00-10h30: Structure Données CM
         (sub_struct, prof_ezzey, grp_ad, amphi1, 4, 9, 2),
-        # 10h45-12h15: Bases de Données CM
-        (sub_bd, prof_ouafae, grp_ad, amphi1, 4, 11, 2),
+        # 10h45-12h15: Bases de Données CM (11 -> 10)
+        (sub_bd, prof_ouafae, grp_ad, amphi1, 4, 10, 2),
         # 14h15-15h45: Python TP (suite)
         (sub_py, prof_lahlou, grp_ad_g2, e10, 4, 14, 2),
         
         # === VENDREDI ===
         # 09h00-10h30: Communication
         (sub_comm, prof_benali, grp_ad, c01, 5, 9, 2),
-        # 10h45-12h15: Développement Web CM
-        (sub_web, prof_ezzey, grp_ad, amphi2, 5, 11, 2),
-        # 15h00-16h30: Big Data TP (Vendredi après-midi commence à 15h)
+        # 10h45-12h15: Développement Web CM (11 -> 10)
+        (sub_web, prof_ezzey, grp_ad, amphi2, 5, 10, 2),
+        # 15h00-16h30: Big Data TP (Vendredi commence à 15h)
         (sub_bigdata, prof_sanae, grp_ad_g1, e10, 5, 15, 2),
         
         
@@ -494,25 +507,29 @@ def insert_timetable_fst():
     prof_chaabi = get_id("instructors", "name", "Hicham Chaabi")
     prof_fassi = get_id("instructors", "name", "Latifa Fassi")
     
-    amphi4 = get_id("rooms", "name", "Amphi 4")
-    amphi6 = get_id("rooms", "name", "Amphi 6")
-    e13 = get_id("rooms", "name", "E13")
-    e14 = get_id("rooms", "name", "E14")
-    b03 = get_id("rooms", "name", "B03")
-    c02 = get_id("rooms", "name", "C02")
-    
     timetable_idai_ssd_mid = [
        
         # EMPLOI DU TEMPS IDAI
         
-        (sub_deep, prof_sanae, grp_idai, amphi4, 1, 9, 2),
+        # LUN 9h: Déplacé à Lundi 14h pour éviter conflit avec Sanae (LST AD)
+        # (sub_deep, prof_sanae, grp_idai, amphi4, 1, 9, 2), <CONFLIT>
+        (sub_deep, prof_sanae, grp_idai, amphi4, 1, 14, 2), 
+        
+        # (sub_vision, prof_chaabi, grp_idai_g1, e13, 1, 10, 2),
         (sub_vision, prof_chaabi, grp_idai_g1, e13, 1, 10, 2),
         (sub_vision, prof_chaabi, grp_idai_g2, e14, 1, 10, 2),
+        
         (sub_nlp, prof_sanae, grp_idai, amphi4, 2, 9, 2),
         (sub_deep, prof_sanae, grp_idai_g1, e13, 2, 14, 2),
+        
         (sub_robot, prof_chaabi, grp_idai, amphi4, 3, 9, 2),
-        (sub_nlp, prof_sanae, grp_idai_g1, e13, 3, 14, 2),
-        (sub_nlp, prof_sanae, grp_idai_g2, e14, 3, 14, 2),
+        
+        # MER 14h: Conflit G1/G2 Sanae en même temps
+        # (sub_nlp, prof_sanae, grp_idai_g1, e13, 3, 14, 2), <CONFLIT>
+        (sub_nlp, prof_sanae, grp_idai_g1, e13, 3, 14, 2), 
+        # Déplacer G2 à Mercredi 16h
+        (sub_nlp, prof_sanae, grp_idai_g2, e14, 3, 16, 2),
+        
         (sub_anglais, prof_benali, grp_idai, c02, 4, 9, 2),
         (sub_vision, prof_chaabi, grp_idai, amphi4, 4, 10, 2),
         (sub_comm, prof_benali, grp_idai, c02, 5, 9, 2),
@@ -553,23 +570,28 @@ def insert_timetable_fst():
     
     timetable_data.extend(timetable_idai_ssd_mid)
     
-    count = 0
+    count_success = 0
+    count_error = 0
+    
+    print("\nInsertion des créneaux (avec vérification de conflits)...")
+    
     for course_id, instructor_id, group_id, room_id, day, start_hour, duration in timetable_data:
         if all([course_id, instructor_id, group_id, room_id]):
-            try:
-                cursor.execute("""
-                    INSERT INTO timetable (course_id, instructor_id, group_id, room_id, day, start_hour, duration, created_by)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """, (course_id, instructor_id, group_id, room_id, day, start_hour, duration, admin_id))
-                count += 1
-            except sqlite3.IntegrityError as e:
-                print(f"Erreur insertion: {e}")
+            # Use insert_schedule_slot from database.py which includes Safe Conflict Check
+            success = insert_schedule_slot(course_id, instructor_id, group_id, room_id, day, start_hour, duration, admin_id)
+            if success:
+                count_success += 1
+            else:
+                count_error += 1
     
-    conn.commit()
-    conn.close()
-    print(f"✓ {count} créneaux d'emploi du temps insérés")
+    print(f"✓ {count_success} créneaux insérés avec succès")
+    if count_error > 0:
+        print(f"⚠️ {count_error} créneaux rejetés pour cause de conflit !")
+    else:
+        print("✓ Aucune erreur de conflit détectée.")
 
 def insert_subject_relations():
+
     """Insère les relations matières-groupes et matières-enseignants"""
     conn = get_connection()
     cursor = conn.cursor()

@@ -315,11 +315,11 @@ class StudentController:
         elements.append(Paragraph(f"Mon Emploi du Temps - Étudiant ({group_name})", style_title))
 
         # Data Matrix
-        time_slots = ["09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
+        time_slots = ["08h00-09h30", "09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
         data = [["JOURS"] + time_slots]
         days_list = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"]
         DAYS_MAPPING = {"LUNDI": 1, "MARDI": 2, "MERCREDI": 3, "JEUDI": 4, "VENDREDI": 5, "SAMEDI": 6}
-        SLOT_TO_HOUR = {"09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
+        SLOT_TO_HOUR = {"08h00-09h30": 8, "09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
 
         for day_name in days_list:
             row = [day_name]
@@ -351,7 +351,7 @@ class StudentController:
         conn.close()
 
         # Table Style
-        table = Table(data, colWidths=[80] + [135] * len(time_slots))
+        table = Table(data, colWidths=[80] + [110] * len(time_slots))
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
@@ -393,7 +393,7 @@ class StudentController:
         fill_header = PatternFill(start_color="DDDDDD", end_color="DDDDDD", fill_type="solid")
         
         # Headers
-        time_slots = ["09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
+        time_slots = ["08h00-09h30", "09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
         ws.append(["JOURS"] + time_slots)
         
         for cell in ws[1]:
@@ -405,7 +405,7 @@ class StudentController:
         # Data
         days_list = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"]
         DAYS_MAPPING = {"LUNDI": 1, "MARDI": 2, "MERCREDI": 3, "JEUDI": 4, "VENDREDI": 5, "SAMEDI": 6}
-        SLOT_TO_HOUR = {"09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
+        SLOT_TO_HOUR = {"08h00-09h30": 8, "09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
         
         conn = getConnection()
         cursor = conn.cursor()
@@ -470,12 +470,12 @@ class StudentController:
         unique_filename = os.path.join(exports_dir, filename)
         
         # Config
-        time_slots = ["09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
+        time_slots = ["08h00-09h30", "09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
         days_list = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"]
         DAYS_MAPPING = {"LUNDI": 1, "MARDI": 2, "MERCREDI": 3, "JEUDI": 4, "VENDREDI": 5, "SAMEDI": 6}
-        SLOT_TO_HOUR = {"09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
+        SLOT_TO_HOUR = {"08h00-09h30": 8, "09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
         
-        cell_width = 160
+        cell_width = 140 # Slightly reduced
         cell_height = 90
         header_height = 80
         col_header_height = 40

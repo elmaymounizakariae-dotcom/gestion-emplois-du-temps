@@ -324,14 +324,12 @@ class AdminController:
             duration = cc.GetDuration()
             
             # Insertion directe (on bypass check_conflict car l'algo l'a fait)
-            try:
-                cursor.execute("""
-                    INSERT INTO timetable (course_id, instructor_id, group_id, room_id, day, start_hour, duration, created_by)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """, (subj['id'], instr['id'], grp['id'], room_id, db_day, db_start_hour, duration, self.admin_id))
+            # Insertion avec vérification de conflit via insert_schedule_slot
+            success = insert_schedule_slot(subj['id'], instr['id'], grp['id'], room_id, db_day, db_start_hour, duration, self.admin_id)
+            if success:
                 count += 1
-            except Exception as e:
-                print(f"Erreur insertion {subj['name']}: {e}")
+            else:
+                print(f"Erreur/Conflit insertion auto: {subj['name']} ({grp['name']})")
                 
         conn.commit()
         conn.close()
@@ -424,11 +422,11 @@ class AdminController:
         elements.append(Paragraph(f"Filière : {filiere_name}", style_title))
         elements.append(Spacer(1, 15))
 
-        time_slots = ["09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
+        time_slots = ["08h00-09h30", "09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
         data = [["JOURS"] + time_slots]
         days_list = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"]
         DAYS_MAPPING = {"LUNDI": 1, "MARDI": 2, "MERCREDI": 3, "JEUDI": 4, "VENDREDI": 5, "SAMEDI": 6}
-        SLOT_TO_HOUR = {"09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
+        SLOT_TO_HOUR = {"08h00-09h30": 8, "09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
 
         conn = getConnection()
         cursor = conn.cursor()
@@ -465,7 +463,7 @@ class AdminController:
         conn.close()
 
         if len(data) > 1:
-            table = Table(data, colWidths=[80] + [135] * len(time_slots))
+            table = Table(data, colWidths=[80] + [110] * len(time_slots))
             table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
@@ -635,10 +633,10 @@ class AdminController:
         ws['A2'].alignment = center_align
 
         # Créneaux horaires
-        time_slots = ["09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
+        time_slots = ["08h00-09h30", "09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
         days_list = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"]
         DAYS_MAPPING = {"LUNDI": 1, "MARDI": 2, "MERCREDI": 3, "JEUDI": 4, "VENDREDI": 5, "SAMEDI": 6}
-        SLOT_TO_HOUR = {"09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
+        SLOT_TO_HOUR = {"08h00-09h30": 8, "09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
 
         # En-tête du tableau (ligne 4)
         ws.cell(row=4, column=1, value="JOURS").font = title_font
@@ -734,13 +732,13 @@ class AdminController:
         unique_filename = os.path.join(exports_dir, unique_filename)
 
         # Configuration
-        time_slots = ["09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
+        time_slots = ["08h00-09h30", "09h00-10h30", "10h45-12h15", "12h30-14h00", "14h15-15h45", "16h00-17h30"]
         days_list = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"]
         DAYS_MAPPING = {"LUNDI": 1, "MARDI": 2, "MERCREDI": 3, "JEUDI": 4, "VENDREDI": 5, "SAMEDI": 6}
-        SLOT_TO_HOUR = {"09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
+        SLOT_TO_HOUR = {"08h00-09h30": 8, "09h00-10h30": 9, "10h45-12h15": 10, "12h30-14h00": 12, "14h15-15h45": 14, "16h00-17h30": 16}
 
         # Dimensions
-        cell_width = 150
+        cell_width = 130 # Réduit légèrement pour faire tenir plus de colonnes
         cell_height = 80
         header_height = 100
         day_col_width = 100

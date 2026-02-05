@@ -1,5 +1,236 @@
- Application intelligente de gestion des emplois du temps universitaires
- Description du projet
+# 🎓 Système de Gestion Automatique des Emplois du Temps Universitaires
 
+## 📋 Description du Projet
 
+Application intelligente de gestion automatique des emplois du temps d'un établissement universitaire, développée en **Python** avec une interface graphique **Tkinter**.
 
+Cette application permet de créer, organiser et optimiser les emplois du temps des différentes filières tout en respectant les contraintes pédagogiques, matérielles et humaines. Elle garantit une répartition intelligente, rapide et efficace des ressources disponibles.
+
+---
+
+## 🚀 Fonctionnalités Principales
+
+### 👤 Profil Administrateur
+| Fonctionnalité | Description |
+|----------------|-------------|
+| ✅ Génération automatique | Créer les emplois du temps pour toutes les filières via algorithme génétique |
+| ✅ Affectation intelligente | Assigner automatiquement salles et ressources sans chevauchement |
+| ✅ Gestion des contraintes | Gérer disponibilités enseignants, capacités salles, équipements |
+| ✅ Validation réservations | Valider ou rejeter les demandes des enseignants |
+| ✅ Statistiques temps réel | Visualiser taux d'occupation, créneaux surchargés |
+| ✅ Export multi-format | Exporter en PDF, Excel (.xlsx), Image (.png) |
+
+### 👨‍🏫 Profil Enseignant
+| Fonctionnalité | Description |
+|----------------|-------------|
+| ✅ Emploi du temps | Consulter son planning personnalisé |
+| ✅ Réservation ponctuelle | Soumettre une demande de salle (rattrapage, réunion) |
+| ✅ Recherche salle | Trouver une salle vacante selon critères |
+| ✅ Indisponibilité | Signaler une indisponibilité pour réajustement automatique |
+
+### 👨‍🎓 Profil Étudiant
+| Fonctionnalité | Description |
+|----------------|-------------|
+| ✅ Emploi du temps | Consulter le planning de sa filière/groupe |
+| ✅ Mises à jour | Visualiser les modifications en temps réel |
+| ✅ Salles libres | Rechercher créneaux/salles pour travaux de groupe |
+
+### 🤖 Fonctionnalités Intelligentes
+- **Algorithme Génétique** : Génération automatique optimisée des emplois du temps
+- **Détection de conflits** : Identification automatique des chevauchements (salles, enseignants, groupes)
+- **Propositions optimisées** : Choix intelligent selon capacité, équipements et disponibilités
+
+---
+
+## 📁 Structure du Projet (Architecture POO)
+
+```
+python_projet/
+│
+├── 📄 main.py                    # Point d'entrée console
+├── 📄 gui.py                     # Interface graphique Tkinter
+├── 📄 database.py                # Gestion base de données SQLite
+├── 📄 Schedule.py                # Algorithme génétique de planification
+├── 📄 populate_fst.py            # Script de peuplement des données FST
+├── 📄 requirements.txt           # Dépendances Python
+├── 📄 README.md                  # Documentation
+│
+├── 📂 controllers/               # Contrôleurs (Logique métier)
+│   ├── __init__.py
+│   ├── admin_controller.py       # Fonctions Administrateur
+│   ├── teacher_controller.py     # Fonctions Enseignant
+│   └── student_controller.py     # Fonctions Étudiant
+│
+└── 📂 models/                    # Modèles de données (Classes POO)
+    ├── __init__.py
+    ├── user.py                   # Classe User (Utilisateur)
+    ├── instructor.py             # Classe Instructor (Enseignant)
+    ├── group.py                  # Classe Group (Groupe/Filière)
+    ├── room.py                   # Classe Room (Salle)
+    ├── subject.py                # Classe Subject (Matière)
+    └── timetable.py              # Classe TimetableSlot (Créneau)
+```
+
+---
+
+## 🛠️ Installation
+
+### Prérequis
+- **Python 3.10** ou supérieur
+- **pip** (gestionnaire de paquets Python)
+
+### Étapes d'installation
+
+1. **Télécharger ou cloner le projet**
+   ```bash
+   git clone <url-du-projet>
+   cd python_projet
+   ```
+
+2. **Installer les dépendances**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Initialiser la base de données avec des données de démonstration**
+   ```bash
+   python database.py
+   ```
+   Ou pour des données FST complètes :
+   ```bash
+   python populate_fst.py
+   ```
+
+4. **Lancer l'application graphique**
+   ```bash
+   python gui.py
+   ```
+   
+   Ou pour la version console :
+   ```bash
+   python main.py
+   ```
+
+---
+
+## 🔐 Comptes de Démonstration
+
+| Rôle | Identifiant | Mot de passe |
+|------|-------------|--------------|
+| 👤 Administrateur | `admin` | `admin123` |
+| 👤 Administrateur | `mdiani` | `admin123` |
+| 👨‍🏫 Enseignant | `skhalissa` | `prof123` |
+| 👨‍🏫 Enseignant | `obaida` | `prof123` |
+| 👨‍🎓 Étudiant | `zelmaymouni` | `pass123` |
+| 👨‍🎓 Étudiant | `rsaidi` | `pass123` |
+
+---
+
+## 📚 Filières Disponibles
+
+| Code | Filière |
+|------|---------|
+| LST AD | Licence Sciences et Techniques - Analyse de Données |
+| IDAI | Intelligence Artificielle |
+| SSD | Sécurité des Systèmes Distribués |
+| MID | Management Informatique Décisionnel |
+| MIPC | Mathématiques, Informatique, Physique, Chimie |
+| CIVIL | Génie Civil |
+| BCG | Biologie, Chimie, Géologie |
+| MIP | Mathématiques, Informatique, Physique |
+| TAC | Techniques d'Analyse et Contrôle |
+| GEGM | Génie Electrique et Génie Mécanique |
+
+---
+
+## 📊 Formats d'Export
+
+| Format | Extension | Utilisation |
+|--------|-----------|-------------|
+| 📄 PDF | `.pdf` | Documents officiels, impression |
+| 📊 Excel | `.xlsx` | Manipulation, analyse de données |
+| 🖼️ Image | `.png` | Partage rapide, réseaux sociaux |
+
+---
+
+## 🏛️ Contexte Universitaire
+
+Ce projet est conçu pour la **Faculté des Sciences et Techniques de Tanger** (FST Tanger) de l'**Université Abdelmalek Essaâdi**.
+
+### Créneaux Horaires Officiels
+
+| N° | Horaires |
+|----|----------|
+| 1 | 09h00 - 10h30 |
+| 2 | 10h45 - 12h15 |
+| 3 | 12h30 - 14h00 |
+| 4 | 14h15 - 15h45 |
+| 5 | 16h00 - 17h30 |
+
+> **Note:** Le vendredi après-midi, les cours commencent à 15h00.
+
+---
+
+## 🔧 Technologies Utilisées
+
+| Technologie | Utilisation |
+|-------------|-------------|
+| ![Python](https://img.shields.io/badge/Python-3.10+-blue) | Langage principal |
+| **Tkinter** | Interface graphique |
+| **SQLite** | Base de données |
+| **ReportLab** | Génération PDF |
+| **OpenPyXL** | Génération Excel |
+| **Pillow** | Génération d'images |
+| **bcrypt** | Hachage sécurisé des mots de passe |
+
+---
+
+## 📐 Diagramme de Classes (Simplifié)
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│    User     │     │ Instructor  │     │    Room     │
+├─────────────┤     ├─────────────┤     ├─────────────┤
+│ id          │     │ id          │     │ id          │
+│ username    │     │ user_id     │     │ name        │
+│ role        │────▶│ name        │     │ type        │
+│ full_name   │     │ speciality  │     │ capacity    │
+└─────────────┘     └─────────────┘     └─────────────┘
+                           │                   │
+                           │                   │
+                    ┌──────┴───────────────────┴──────┐
+                    │         TimetableSlot           │
+                    ├─────────────────────────────────┤
+                    │ course_id, instructor_id        │
+                    │ group_id, room_id               │
+                    │ day, start_hour, duration       │
+                    └─────────────────────────────────┘
+                                   │
+                    ┌──────────────┴──────────────┐
+                    │                             │
+              ┌─────────────┐             ┌─────────────┐
+              │   Subject   │             │    Group    │
+              ├─────────────┤             ├─────────────┤
+              │ id, name    │             │ id, name    │
+              │ code, type  │             │ filiere     │
+              │ hours_total │             │ student_cnt │
+              └─────────────┘             └─────────────┘
+```
+
+---
+
+## 📝 Auteurs
+
+Projet réalisé dans le cadre du cours de **Programmation Orientée Objet**.
+
+**Université Abdelmalek Essaâdi - Faculté des Sciences et Techniques - Tanger**
+
+---
+
+## 📜 Licence
+
+Ce projet est destiné à un usage éducatif.
+
+---
+
+© 2026 - Université Abdelmalek Essaâdi - FST Tanger
